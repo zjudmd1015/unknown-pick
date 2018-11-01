@@ -1,0 +1,5 @@
+string interested_object
+sensor_msgs/Image rgb_img
+---
+bool is_found
+sensor_msgs/Image obj_mask
