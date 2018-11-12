@@ -19,6 +19,13 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_conversions
   image_transport
   cv_bridge
+  message_filters
+  cmake_modules
+  interactive_markers
+  moveit_core
+  moveit_ros_perception
+  moveit_ros_planning_interface
+  pluginlib
 )
 
 ## System dependencies are found with CMake's conventions
@@ -147,7 +154,8 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 
-add_executable(segment_cloud src/segment_cloud.cc)
+
+add_executable(segment_cloud_v2 src/segment_cloud_v2.cpp)
 
 
 
@@ -168,7 +176,10 @@ add_executable(segment_cloud src/segment_cloud.cc)
 #   ${catkin_LIBRARIES}
 # )
 
-target_link_libraries(segment_cloud ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+
+target_link_libraries(segment_cloud_v2 ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+
+
 
 
 

@@ -1,0 +1,11 @@
+<launch>
+
+  <node name="to_panda_base" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 1 mdworld panda_link0" />
+
+  <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" args="0.2 -0.5 0.6 -1 0 -2.1 mdworld camera_frame" />
+
+  <!-- <include file="$(find moveit_tutorials)/doc/perception_pipeline/launch/obstacle_avoidance_demo.launch" /> -->
+
+  <include file="$(find panda_moveit_config)/launch/demo.launch" />
+
+</launch>

@@ -12,6 +12,7 @@ import cv2
 sys.path.append("/opt/ros/kinetic/lib/python2.7/dist-packages")
 import matplotlib.pyplot as plt
 # from sensor_msgs.msg import Image
+sys.path.insert(1, "/home/dylan2/ws_catkin/install/lib/python3/dist-packages")
 from cv_bridge import CvBridge, CvBridgeError
 from unknown_pick.srv import *
 
@@ -19,7 +20,7 @@ from unknown_pick.srv import *
 def main():
     bridge = CvBridge()
     bgr_img = cv2.imread('/home/dylan2/workspace/unknown-pick/dataset/mask_rcnn/0001_color.jpg')
-    interested_obj = "cup"
+    interested_obj = "orange"
 
 
     try:

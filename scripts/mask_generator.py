@@ -7,6 +7,7 @@
 
 import os
 import sys
+#FIXME package incompatiblity
 sys.path.remove("/opt/ros/kinetic/lib/python2.7/dist-packages")
 import math
 import numpy as np
@@ -38,6 +39,7 @@ sys.path.append("/opt/ros/kinetic/lib/python2.7/dist-packages")
 import rospy
 import cv2
 from sensor_msgs.msg import Image
+sys.path.insert(1, "/home/dylan2/ws_catkin/install/lib/python3/dist-packages")
 from cv_bridge import CvBridge, CvBridgeError
 from unknown_pick.srv import *
 
@@ -59,7 +61,7 @@ class MaskGenerator:
         self.service = rospy.Service('generate_mask', mask_req, self.handle_mask_req)
         self.bridge = CvBridge()
         try:
-            print("Service is ready ------")
+            rospy.loginfo("Service is ready ------")
             rospy.spin()
         except KeyboardInterrupt:
             print("Shutting down")

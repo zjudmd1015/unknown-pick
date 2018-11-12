@@ -1,0 +1,26 @@
+<launch>
+
+<!-- TF info initialization -->
+  <node name="tf_init" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 mdworld camera_frame 10" />
+
+<!-- fake Kinect2 node, publishing registered depth image and color image -->
+  <node name="fake_kinect2_publisher" pkg="unknown_pick" type="kinect2_fake.py" />
+
+<!-- Mask generator service -->
+  <!-- <node name="mask_generator_fake" pkg="unknown_pick" type="mask_generator_fake.py" /> -->
+
+<!-- segment cloud -->
+  <node name="cloud_segmentor" pkg="unknown_pick" type="segment_cloud_v2" output="screen">
+    <param name="interested_object" value="orange" />
+  </node>
+
+<!-- GPD generation launch file -->
+<!-- should be open in 'unknown_pick' virtualenv -->
+  <!-- <include file="$(find gpd)/launch/tutorial1.launch">
+    <arg name="node" value="detect_grasps" />
+  </include> -->
+
+<!-- visualization in RViz (optional) -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find unknown_pick)/config/scene.rviz" />
+
+</launch>
