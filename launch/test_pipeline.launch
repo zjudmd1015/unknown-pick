@@ -4,7 +4,7 @@
   <node name="tf_init" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 mdworld camera_frame 10" />
 
 <!-- fake Kinect2 node, publishing registered depth image and color image -->
-  <node name="fake_kinect2_publisher" pkg="unknown_pick" type="kinect2_fake.py" />
+  <node name="fake_kinect2_publisher" pkg="unknown_pick" type="fake_kinect2.py" />
 
 <!-- Mask generator service -->
   <!-- <node name="mask_generator_fake" pkg="unknown_pick" type="mask_generator_fake.py" /> -->
@@ -22,5 +22,8 @@
 
 <!-- visualization in RViz (optional) -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find unknown_pick)/config/scene.rviz" />
+
+<!-- grasp detector -->
+  <include file="$(find unknown_pick)/launch/grasp_detector.launch" />
 
 </launch>

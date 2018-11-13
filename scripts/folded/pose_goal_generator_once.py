@@ -15,35 +15,38 @@ class PoseGoalGenerator:
     '''
     def __init__(self):
         self.grasps = []  # variable to store grasps
+        self.FLAG_grasp_received = False
+
         self.init_ROS()
+        self.utility()
 
     def init_ROS(self):
         rospy.init_node("get_grasps", anonymous = False)
         self.sub = rospy.Subscriber("/detect_grasps/clustered_grasps", GraspConfigList, self.callback)
         self.pub = rospy.Publisher("/get_grasps/pose_goal", Pose, queue_size=1)
         self.rate = rospy.Rate(1)
-        try:
-            rospy.spin()
-        except KeyboardInterrupt:
-            print("Shutting down")
 
     def callback(self, msg):
         '''
         Callback function to receive grasps.
         '''
         self.grasps = msg.grasps
-        self.utility()
+        if self.FLAG_grasp_received == True:
+            self.sub.unregister()
 
     def utility(self):
-        if len(self.grasps) <= 0:
+        while not rospy.is_shutdown():
             print(".")
-        else:
-            rospy.loginfo('Received %d grasps.', len(self.grasps))
+            if len(self.grasps) > 0:
+                rospy.loginfo('Received %d grasps.', len(self.grasps))
+                self.FLAG_grasp_received = True
+                break
+            self.rate.sleep()
+        grasp = self.grasps[0] # grasps are sorted in descending order by score
+        print('Selected grasp with score:', grasp.score)
+        pose_goal = self.grasp2pose(grasp)
 
-            grasp = self.grasps[0] # grasps are sorted in descending order by score
-            print('Selected grasp with score:', grasp.score)
-            pose_goal = self.grasp2pose(grasp)
-            
+        while not rospy.is_shutdown():
             self.pub.publish(pose_goal)
             self.rate.sleep()
     

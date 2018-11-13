@@ -55,7 +55,7 @@ class MaskGenerator:
 
 
     def init_ROS(self):
-        rospy.init_node("mask_generator", anonymous = False)
+        rospy.init_node("fake_mask_generator", anonymous = False)
         self.service = rospy.Service('generate_mask', mask_req, self.handle_mask_req)
         self.bridge = CvBridge()
         try:

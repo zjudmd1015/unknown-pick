@@ -1,4 +1,10 @@
+<!-- Do not launch in virtualenv -->
+
 <launch>
+
+  <!-- fake_mask_generator & fake_kinect2 should be open in virtualenv 'mask_rcnn'  -->
+
+
 
   <node name="to_panda_base" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 1 mdworld panda_link0" />
 
@@ -7,5 +13,14 @@
   <!-- <include file="$(find moveit_tutorials)/doc/perception_pipeline/launch/obstacle_avoidance_demo.launch" /> -->
 
   <include file="$(find panda_moveit_config)/launch/demo.launch" />
+
+  <!-- fake Kinect2 node, publishing registered depth image and color image -->
+    <!-- <node name="fake_kinect2_publisher" pkg="unknown_pick" type="fake_kinect2.py" /> -->
+
+  <!-- segment cloud -->
+    <node name="cloud_segmentor" pkg="unknown_pick" type="segment_cloud_v2" output="screen">
+      <param name="interested_object" value="orange" />
+    </node>
+
 
 </launch>
