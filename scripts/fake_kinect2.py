@@ -18,8 +18,6 @@ sys.path.remove("/opt/ros/kinetic/lib/python2.7/dist-packages")
 import cv2 
 
 
-
-
 def main():
     bgr_img = cv2.imread(
         "/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/0001_color.jpg")
@@ -36,7 +34,7 @@ def main():
     ## convert OpenCV images to ROS image messages
     try:
         ros_bgr_img = bridge.cv2_to_imgmsg(bgr_img, "bgr8")
-        ros_depth_img = bridge.cv2_to_imgmsg(depth_img, "mono16")
+        ros_depth_img = bridge.cv2_to_imgmsg(depth_img, "16UC1")
     except CvBridgeError as e:
         print(e)
     

@@ -1,0 +1,15 @@
+<launch>
+
+  <node name="fake_kinect2_stream" pkg="rosbag" type="play"
+    args="-l /home/dylan2/workspace/unknown-pick/dataset/2018-11-27-23-12-19.bag"
+  />
+
+  <!-- <node name="decompress_color_img" pkg="image_transport" type="republish"
+    args="compressed in:=/kinect2/qhd/image_color_rect raw out:=/kinect2/qhd/image_color_rect"
+  />
+
+  <node name="decompress_depth_img" pkg="image_transport" type="republish"
+    args="compressed in:=/kinect2/qhd/image_depth_rect raw out:=/kinect2/qhd/image_depth_rect"
+  /> -->
+
+</launch>

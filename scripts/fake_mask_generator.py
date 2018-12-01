@@ -53,7 +53,6 @@ class MaskGenerator:
     def __init__(self):
         self.init_ROS()
 
-
     def init_ROS(self):
         rospy.init_node("fake_mask_generator", anonymous = False)
         self.service = rospy.Service('generate_mask', mask_req, self.handle_mask_req)

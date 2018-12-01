@@ -42,7 +42,6 @@ const double camera_fy = 524.40;
 
 class CloudSegmentor {
   private:
-    ros::NodeHandle nh_;
     // service client
     ros::ServiceClient client_;
     // subscriber
@@ -59,18 +58,19 @@ class CloudSegmentor {
     
   public:
     CloudSegmentor() {
+      ros::NodeHandle nh_("~");
       // ros param
-      if (nh_.getParam("/cloud_segmentor/interested_object", interested_object_)) {
+      if (nh_.getParam("interested_object", interested_object_)) {
         ROS_INFO("Got param: %s", interested_object_.c_str());
       } else {
         ROS_ERROR("Failed to get param: %s", interested_object_.c_str());
         ros::shutdown();
       }
       // service client
-      client_ = nh_.serviceClient<unknown_pick::mask_req>("generate_mask");
+      client_ = nh_.serviceClient<unknown_pick::mask_req>("/generate_mask");
       // publisher
-      object_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("cloud_object", 1);
-      obstacle_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("cloud_obstacle", 1);
+      object_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_object", 1);
+      obstacle_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/cloud_obstacle", 1);
       // subscriber - normal
 
 /* FIXME: how to handle this subscriber? */
@@ -116,7 +116,7 @@ void CloudSegmentor::callback(const sensor_msgs::ImageConstPtr& ros_bgr_img, con
   ROS_INFO("inside the callback func");
   try {
     bgr = cv_bridge::toCvShare(*ros_bgr_img, tracked_object, "bgr8")->image;
-    depth = cv_bridge::toCvShare(*ros_depth_img, tracked_object, "mono16")->image;
+    depth = cv_bridge::toCvShare(*ros_depth_img, tracked_object, "16UC1")->image;
   } catch (cv::Exception &e) {
     ROS_ERROR("Could not convert from ROS image to CV image.");
   }

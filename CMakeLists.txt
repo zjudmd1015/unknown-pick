@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   geometry_msgs
   sensor_msgs
+  trajectory_msgs
   pcl_ros
   pcl_msgs
   pcl_conversions
