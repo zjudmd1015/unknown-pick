@@ -1,0 +1,55 @@
+<launch>
+
+  <!-- **************************************** -->
+
+  <node pkg="nodelet" type="nodelet" name="pcl_filter_manager"  args="manager"/>
+
+  <!-- /cloud_object -->
+  <node pkg="nodelet" type="nodelet" name="stat_filter_object" args="load pcl/StatisticalOutlierRemoval pcl_filter_manager" >
+    <remap from="~input" to="/cloud_object/unfiltered" />
+    <remap from="~output" to="/cloud_object" />
+    <param name="~stddev" value="0.1" />
+    <!-- <param name="mean_k" type="int" value="2" />
+    <param name="stddev" type="double" value="0.2" />
+    <param name="negative" type="bool" value="false" /> -->
+  </node>
+
+  <!-- /cloud_obstacle -->
+  <node pkg="nodelet" type="nodelet" name="passthrough_filter_obstacle" args="load pcl/PassThrough pcl_filter_manager" >
+    <remap from="~input" to="/cloud_obstacle/unfiltered" />
+    <remap from="~output" to="/cloud_obstacle/passthrough" />
+    <param name="~filter_field_name" value="z" />
+    <param name="~filter_limit_min" value="0.0" />
+    <param name="~filter_limit_max" value="1.2" />
+    <param name="~input_frame" value="/camera_frame" />
+  </node>
+  <node pkg="nodelet" type="nodelet" name="stat_filter_obstacle" args="load pcl/StatisticalOutlierRemoval pcl_filter_manager" >
+    <remap from="~input" to="/cloud_obstacle/passthrough" />
+    <remap from="~output" to="/cloud_obstacle" />
+    <param name="~stddev" value="0.1" />
+  </node>
+
+
+  <!-- clipper filter -->
+  <!-- <node pkg="nodelet" type="nodelet" name="pointcloud_clipper" 
+        args="load pcl/PassThrough nodelet_manager" >
+    <remap from="~input" to="rectified_points" />
+    <remap from="~output" to="clipped_points" />
+    <param name="~filter_field_name" value="z" />
+    <param name="~filter_limit_min" value="0.0" />
+    <param name="~filter_limit_max" value="1.5" />
+    <param name="~input_frame" value="/openni_depth_optical_frame" />
+  </node> -->
+
+  <!-- Voxel grid filter -->
+  <!-- <node pkg="nodelet" type="nodelet" name="voxel_filter"
+        args="load pcl/VoxelGrid pcl_filter_manager">
+    <param name="leaf_size" type="double" value="0.01" />
+
+    <remap from="voxel_filter/input" to="cloud_filter1" />
+    <remap from="voxel_filter/output" to="cloud_filtered"/>
+  </node> -->
+
+
+</launch>
+

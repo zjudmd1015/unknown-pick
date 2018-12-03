@@ -1,0 +1,9 @@
+string command
+---
+bool received
+
+
+
+# "command" format list:
+# 1. "grasp_<object>", e.g. "grasp_orange"
+# 2. "cmd_<command>", e.g. "cmd_retry"

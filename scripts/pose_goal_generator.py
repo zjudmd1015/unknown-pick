@@ -36,7 +36,7 @@ class PoseGoalGenerator:
         self.pub = rospy.Publisher("~pose_goal", Pose, queue_size=1)
         self.br = tf2_ros.TransformBroadcaster()  # tf2_ros broadcaster
         self.tf = None # initially no tf, so do not broadcast
-        self.br_rate = rospy.Rate(1000) # 1000 hz
+        self.br_rate = rospy.Rate(10000) # 10k hz
 
         # try:
         #     rospy.spin()
@@ -73,25 +73,41 @@ class PoseGoalGenerator:
         ## Pose
         pose = Pose()
         if not self.is_pose_goal_fixed:
-            ## for Panda Robot
+            ## for MICO Robot
             pose.position = grasp.bottom
 
             appr, bino, axis = grasp.approach, grasp.binormal, grasp.axis
-            rx =        np.array([axis.x, axis.y, axis.z])
-            ry = -1.0 * np.array([bino.x, bino.y, bino.z])
-            rz =        np.array([appr.x, appr.y, appr.z])
+            rx = np.array([bino.x, bino.y, bino.z])       
+            ry = np.array([axis.x, axis.y, axis.z])
+            rz = np.array([appr.x, appr.y, appr.z])
             Rot = np.matrix([rx, ry, rz]).T
             quat = Quaternion(matrix = Rot)
 
             pose.orientation.w = quat[0]
             pose.orientation.x = quat[1]
             pose.orientation.y = quat[2]
-            pose.orientation.z = quat[3]
+            pose.orientation.z = quat[3]   
+
+            ## for Panda Robot
+            # pose.position = grasp.bottom
+
+            # appr, bino, axis = grasp.approach, grasp.binormal, grasp.axis
+            # rx =        np.array([axis.x, axis.y, axis.z])
+            # ry = -1.0 * np.array([bino.x, bino.y, bino.z])
+            # rz =        np.array([appr.x, appr.y, appr.z])
+            # Rot = np.matrix([rx, ry, rz]).T
+            # quat = Quaternion(matrix = Rot)
+
+            # pose.orientation.w = quat[0]
+            # pose.orientation.x = quat[1]
+            # pose.orientation.y = quat[2]
+            # pose.orientation.z = quat[3]
         else:
             ## for debug
             pose.position.x = -0.1523
             pose.position.y = -0.0336
             pose.position.z =  0.6566 
+            # pose.position.z = 5.0  # which is impossible
             pose.orientation.w = 1.0
 
         ## tf 'grasp_frame'
@@ -110,6 +126,7 @@ class PoseGoalGenerator:
 
     def tf_broadcaster(self):
         if self.tf is not None:
+            self.tf.header.stamp = rospy.Time.now()
             self.br.sendTransform(self.tf)
         
 
