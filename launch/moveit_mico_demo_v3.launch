@@ -11,12 +11,16 @@
   <arg name="grasp_detection_topic" default="/detect_grasps/clustered_grasps" />
   <arg name="is_filter_pointcloud" default="true" />
   <arg name="is_use_GPD" default="true" />
+  <arg name="GPD_num_selected" default="20" />
   
   <!-- **************************************** -->
 
   <!-- Frames setup -->
   <node name="to_mico_base" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 1 mdworld world" />
-  <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" args="0 0.1 0.4 0 3.1415926 1.0 mdworld camera_frame" />
+  <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" args="0 0.1 0.6 0 3.1415926 1.0 mdworld camera_frame" />
+  <!-- z: 0.4 -->
+
+
 
   <!-- coordinator node -->
   <node name="unknown_pick_coordinator" pkg="unknown_pick" type="coordinator.py" />
@@ -40,6 +44,7 @@
   <!-- GPD package - generate suitable grasps -->
   <include file="$(find unknown_pick)/launch/grasp_detector.launch" >
     <arg name="cloud_topic" default="/cloud_object_whatever" unless="$(arg is_use_GPD)" />
+    <arg name="num_selected" default="$(arg GPD_num_selected)" />
   </include> 
 
   <!-- pose goal generator - convert GPD format into a pose -->

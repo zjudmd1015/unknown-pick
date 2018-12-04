@@ -17,7 +17,6 @@ from cv_bridge import CvBridge, CvBridgeError
 sys.path.remove("/opt/ros/kinetic/lib/python2.7/dist-packages")
 import cv2 
 
-
 def main():
     bgr_img = cv2.imread(
         "/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/0001_color.jpg")

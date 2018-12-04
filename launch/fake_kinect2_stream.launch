@@ -1,7 +1,7 @@
 <launch>
 
   <node name="fake_kinect2_stream" pkg="rosbag" type="play"
-    args="-l /home/dylan2/workspace/unknown-pick/dataset/2018-11-27-23-12-19.bag"
+    args="-l /home/dylan2/workspace/unknown-pick/dataset/2018-12-03-23-32-18.bag"
   />
 
   <!-- <node name="decompress_color_img" pkg="image_transport" type="republish"

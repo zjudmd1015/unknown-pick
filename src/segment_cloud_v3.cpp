@@ -123,6 +123,7 @@ bool CloudSegmentor::callback(unknown_pick::seg_req::Request &req, unknown_pick:
   boost::shared_ptr<sensor_msgs::Image const> ros_depth_img
           = ros::topic::waitForMessage<sensor_msgs::Image>("/kinect2/qhd/image_depth_rect", nh_, duration);
   if (ros_bgr_img == NULL || ros_depth_img == NULL) {
+    res.is_done = false;
     return false;
   }
 
@@ -155,8 +156,9 @@ bool CloudSegmentor::callback(unknown_pick::seg_req::Request &req, unknown_pick:
     cv::Mat mask;
 
     if (srv.response.is_found == false) {
-      ROS_INFO("Did not find the interested object!");
-      return false;
+      ROS_WARN("Did not find the interested object!");
+      res.is_done = true;
+      return true;
     } else {
       ROS_INFO("Masked it, starting to generate point cloud...");
       // mask_ptr = cv_bridge::toCvShare(srv.response.obj_mask, tracked_object, "bgr8");
@@ -254,6 +256,7 @@ bool CloudSegmentor::callback(unknown_pick::seg_req::Request &req, unknown_pick:
     }
   } else {
     ROS_ERROR("Failed to call mask_rcnn service");
+    res.is_done = false;
     return false;
   }
 

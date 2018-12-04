@@ -55,13 +55,12 @@ class MaskGenerator:
         self.init_model()
         self.init_ROS()
 
-
     def init_ROS(self):
         rospy.init_node("mask_generator", anonymous = False)
         self.service = rospy.Service('generate_mask', mask_req, self.handle_mask_req)
         self.bridge = CvBridge()
         try:
-            rospy.loginfo("Service is ready ------")
+            rospy.loginfo("Mask Generator Service is ready ------")
             rospy.spin()
         except KeyboardInterrupt:
             print("Shutting down")

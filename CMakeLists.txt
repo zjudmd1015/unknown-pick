@@ -157,7 +157,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 
-add_executable(segment_cloud_v2 src/segment_cloud_v2.cpp)
+# add_executable(segment_cloud_v2 src/segment_cloud_v2.cpp)
 add_executable(segment_cloud_v3 src/segment_cloud_v3.cpp)
 
 
@@ -180,7 +180,7 @@ add_executable(segment_cloud_v3 src/segment_cloud_v3.cpp)
 # )
 
 
-target_link_libraries(segment_cloud_v2 ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+# target_link_libraries(segment_cloud_v2 ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 target_link_libraries(segment_cloud_v3 ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 

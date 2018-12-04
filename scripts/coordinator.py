@@ -11,6 +11,8 @@ from unknown_pick.srv import seg_req, coor_req
 class Coordinator:
 
     def __init__(self):
+        self.num_trial = 3  # used in requesting "/cloud_segmentor/segment_cloud" service
+
         self.init_ROS()
 
     def init_ROS(self):
@@ -32,16 +34,20 @@ class Coordinator:
         if cmd[0] == "grasp":
             interested_obj = cmd[1]
         
-            rospy.wait_for_service("/cloud_segmentor/segment_cloud")
-            try:
-                client = rospy.ServiceProxy("/cloud_segmentor/segment_cloud", seg_req)
-                response = client(interested_obj)
-            except rospy.ServiceException as e:
-                print ("Service call failed: %s"%e)
+            for i in range(self.num_trial):
+                rospy.wait_for_service("/cloud_segmentor/segment_cloud", timeout=3.0)
+                try:
+                    client = rospy.ServiceProxy("/cloud_segmentor/segment_cloud", seg_req)
+                    response = client(interested_obj)
+                    if response.is_done == True:
+                        return True
+                except rospy.ServiceException as e:
+                    rospy.logwarn("{} trial of 'segment_cloud' service call failed: {}".format(i+1, e))
+                
         else:
             return False
 
-        return True
+        return False
 
 def main():
     coordinator = Coordinator()

@@ -71,8 +71,8 @@ class MoveitPregrasp:
             self.approach_eef(pose_grasp)
             self.close_gripper()
             self.retrieve_eef(pose_grasp)
-            self.go_home()
-            self.open_gripper()
+        self.go_home()
+        self.open_gripper()
 
     def open_gripper(self):
         self.group_gripper = moveit_commander.MoveGroupCommander("mico_gripper")
