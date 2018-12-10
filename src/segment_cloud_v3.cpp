@@ -37,11 +37,19 @@ typedef pcl::PointCloud<PointT> PointCloud;
 typedef sensor_msgs::PointCloud2 RosPointCloud2;
 typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sensor_msgs::Image> SyncPolicy;
 
-const double camera_factor = 1000;
-const double camera_cx = 474.82;
-const double camera_cy = 249.06;
-const double camera_fx = 523.44;
-const double camera_fy = 524.40;
+// ****** Kinect 2 from D110 ****** //
+// const double camera_factor = 1000;
+// const double camera_cx = 474.82;
+// const double camera_cy = 249.06;
+// const double camera_fx = 523.44;
+// const double camera_fy = 524.40;
+
+// ****** Kinect 2 from Argallab ****** //
+// const double camera_factor = 1000;
+// const double camera_cx = 486.98;
+// const double camera_cy = 262.72;
+// const double camera_fx = 527.35;
+// const double camera_fy = 527.04;
 
 class CloudSegmentor {
   private:
@@ -59,10 +67,25 @@ class CloudSegmentor {
     // params
     // std::string interested_object_ = "orange";
     std::string interested_object_;
+    double camera_factor, camera_cx, camera_cy, camera_fx, camera_fy;
     
   public:
     CloudSegmentor(): nh_("~") {
-      // // ros param
+      // ros param
+      if (nh_.getParam("camera_factor", camera_factor) && 
+          nh_.getParam("camera_cx", camera_cx) && 
+          nh_.getParam("camera_cy", camera_cy) && 
+          nh_.getParam("camera_fx", camera_fx) && 
+          nh_.getParam("camera_fy", camera_fy) ) {
+        ROS_INFO_STREAM("Camera factor: " << camera_factor << " || cx: " << camera_cx << 
+              " || cy: " << camera_cy << " || fx: " << camera_fx << " || fy: " << camera_fy);
+      } else {
+        ROS_ERROR("Failed to get camera intrinsic parameters!");
+        ros::shutdown();
+      }
+
+
+
       // if (nh_.getParam("interested_object", interested_object_)) {
       //   ROS_INFO("Got param: %s", interested_object_.c_str());
       // } else {

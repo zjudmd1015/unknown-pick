@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<launch>
+
+  #####################################
+  # moveit stuff
+  #####################################
+
+  ## Loads robot urdf srdf to parameter server
+
+  ## trajectory execution parameters
+  # the following parameters are for trajectory execution monitoring. Sometimes the execution on the real
+  # hardware would take longer (due to lag, real controllers on hardware, etc) as moveit expected. the traj
+  # execution would then be interrupted before the robot reaches its goal. these parameters can also be
+  # adjusted on the fly using rqt_reconfigure tag move_group/trajectory_execution.
+  <param name="move_group/trajectory_execution/allowed_execution_duration_scaling" value="1.5" />
+  <param name="move_group/trajectory_execution/execution_duration_monitoring" value="true" />
+
+
+  <include file="$(find moveit_generated)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="true"/>
+  </include>
+
+
+  <include file="$(find moveit_generated)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="fake_execution" value="false"/>
+    <arg name="info" value="true"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+
+   <!-- Run Rviz and load the default config to see the state of the move_group node -->
+  <include file="$(find moveit_generated)/launch/moveit_rviz.launch">
+    <arg name="config" value="true"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  #####################################
+  # basic environment rviz
+  #####################################
+
+  <node pkg="mico_interaction" type="basic_mico_environment.py" name="basic_mico_environment" output="screen"/>
+
+</launch>

@@ -17,14 +17,16 @@ import tf2_ros
 import tf2_geometry_msgs
         
 from trajectory_msgs.msg import JointTrajectory
+from std_srvs.srv import Empty
 
-class MoveitPregrasp:
+class MoveitGrasp:
     
     def __init__(self):
         rospy.sleep(5.)
 
         ## initialize important parameters
         self.pregrasp_stepback = 0.2
+        self.is_clear_octomap = True
         
         ## ROS init
         self.init_ROS_and_moveit()
@@ -73,6 +75,8 @@ class MoveitPregrasp:
             self.retrieve_eef(pose_grasp)
         self.go_home()
         self.open_gripper()
+        if self.is_clear_octomap:
+            self.clear_octomap()
 
     def open_gripper(self):
         self.group_gripper = moveit_commander.MoveGroupCommander("mico_gripper")
@@ -181,8 +185,15 @@ class MoveitPregrasp:
         pose_mdworld = tf2_geometry_msgs.do_transform_pose(pose_g, transform_grasp_world)
         return pose_mdworld
 
-
-
+    def clear_octomap(self):
+        rospy.loginfo("Clearing Octomap...")
+        rospy.wait_for_service("/clear_octomap")
+        try:
+            client = rospy.ServiceProxy("/clear_octomap", Empty)
+            client()
+        except rospy.ServiceException as e:
+            print ("Service call failed: %s"%e)
+        rospy.loginfo("Octomap cleared.")
 
 
 
@@ -291,7 +302,7 @@ class MoveitPregrasp:
 
 
 def main():
-    mp_gen = MoveitPregrasp()
+    mp_gen = MoveitGrasp()
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="eye_in_hand" default="false"/>
+  <arg name="world_file" default="$(find gazebo_control)/worlds/world_with_table.world"/>
+
+  #####################################
+  # moveit stuff
+  #####################################
+  ## Loads robot urdf srdf to parameter server
+  <group if="$(arg eye_in_hand)">
+    <include file="$(find moveit_generated)/launch/planning_context.launch">
+      <arg name="load_robot_description_eye_in_hand" value="true"/>
+    </include>
+	</group>
+	<group unless="$(arg eye_in_hand)">
+    <include file="$(find moveit_generated)/launch/planning_context.launch">
+      <arg name="load_robot_description" value="true"/>
+    </include>
+	</group>
+
+
+  <include file="$(find moveit_generated)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="fake_execution" value="false"/>
+    <arg name="info" value="true"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+
+   <!-- Run Rviz and load the default config to see the state of the move_group node -->
+  <include file="$(find moveit_generated)/launch/moveit_rviz.launch">
+    <arg name="config" value="true"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  #####################################
+  # basic environment rviz
+  #####################################
+
+  <node pkg="mico_interaction" type="basic_mico_environment.py" name="basic_mico_environment" output="screen"/>
+
+
+</launch>

@@ -1,24 +1,30 @@
-<!-- Do not launch in virtualenv -->
+<!-- Do not launch this in virtualenv -->
 <!-- fake_mask_generator & fake_kinect2 should be open in virtualenv 'mask_rcnn'  -->
+<!-- mask_generator should be open in virtualenv 'mask_rcnn' -->
 
 <launch>
   <!-- arguments -->
-  <!-- <arg name="interested_object" default="orange" /> -->
-  <arg name="is_use_rviz_demo" default="true" />
-  <arg name="is_use_gazebo_sim" default="false" />
-  <!-- <arg name="is_discard_cloud_obstacle" default="false" /> -->
+  <arg name="is_use_rviz_demo" default="false" />
+  <arg name="is_use_gazebo_sim" default="true" />
+  <arg name="is_use_real_mico" default="false" />
+
   <arg name="is_pose_goal_fixed" default="false" />
-  <arg name="grasp_detection_topic" default="/detect_grasps/clustered_grasps" />
-  <arg name="is_filter_pointcloud" default="true" />
   <arg name="is_use_GPD" default="true" />
+
   <arg name="GPD_num_selected" default="20" />
-  
+  <arg name="is_filter_pointcloud" default="true" />
+  <arg name="grasp_detection_topic" default="/detect_grasps/clustered_grasps" />
+
   <!-- **************************************** -->
 
   <!-- Frames setup -->
   <node name="to_mico_base" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 1 mdworld world" />
-  <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" args="0 0.1 0.6 0 3.1415926 1.0 mdworld camera_frame" />
+  <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" args="0 -0.1 0.6 0 3.1415926 1.0 mdworld camera_frame" 
+      if="$(eval arg('is_use_rviz_demo') or arg('is_use_gazebo_sim'))" />
   <!-- z: 0.4 -->
+  <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" 
+      args="0.580962087492 0.0651224924142 0.37562071577 -0.29227172725 -0.771322050498 0.535448584394 0.181478222761 mdworld camera_frame" 
+      if="$(arg is_use_real_mico)"/>
 
 
 
@@ -32,9 +38,11 @@
 
   <!-- segment cloud -->
   <node name="cloud_segmentor" pkg="unknown_pick" type="segment_cloud_v3" output="screen">
-    <!-- <remap from="/cloud_obstacle" to="/cloud_whatever" if="$(arg is_discard_cloud_obstacle)" /> -->
+    <rosparam file="$(find unknown_pick)/config/cam_intrinsic.yaml" command="load" /> 
+
     <remap from="/cloud_object" to="/cloud_object/unfiltered" if="$(arg is_filter_pointcloud)" />
     <remap from="/cloud_obstacle" to="/cloud_obstacle/unfiltered" if="$(arg is_filter_pointcloud)" />
+    <!-- <remap from="/cloud_obstacle" to="/cloud_whatever" if="$(arg is_filter_pointcloud)" /> -->
   </node>
 
   <!-- pcl filter nodelets -->

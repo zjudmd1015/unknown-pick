@@ -1,0 +1,15 @@
+# Kinect2 in Argallab (007474652347)
+camera_factor: 1000
+camera_cx: 486.98
+camera_cy: 262.72
+camera_fx: 527.35
+camera_fy: 527.04
+
+
+
+# Kinect2 in D110 (065618241047)
+# camera_factor: 1000
+# camera_cx: 474.82
+# camera_cy: 249.06
+# camera_fx: 523.44
+# camera_fy: 524.40

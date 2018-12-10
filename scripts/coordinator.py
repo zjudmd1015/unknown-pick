@@ -11,7 +11,7 @@ from unknown_pick.srv import seg_req, coor_req
 class Coordinator:
 
     def __init__(self):
-        self.num_trial = 3  # used in requesting "/cloud_segmentor/segment_cloud" service
+        self.num_trial = 5  # used in requesting "/cloud_segmentor/segment_cloud" service
 
         self.init_ROS()
 
@@ -42,7 +42,9 @@ class Coordinator:
                     if response.is_done == True:
                         return True
                 except rospy.ServiceException as e:
-                    rospy.logwarn("{} trial of 'segment_cloud' service call failed: {}".format(i+1, e))
+                    rospy.logwarn("{} out of {} trials of 'segment_cloud' service call failed: {}".format(i+1, self.num_trial, e))
+                if i == self.num_trial - 1:
+                    rospy.logwarn("Maximum number of trials reached. Please call the service again.")
                 
         else:
             return False

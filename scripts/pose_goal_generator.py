@@ -65,6 +65,9 @@ class PoseGoalGenerator:
             
             self.pub.publish(pose_goal)
             # self.rate.sleep()
+
+    def choose_grasp(self, grasp):
+        pass
     
     def grasp2pose(self, grasp):
         '''
@@ -104,9 +107,9 @@ class PoseGoalGenerator:
             # pose.orientation.z = quat[3]
         else:
             ## for debug
-            pose.position.x = -0.1523
+            pose.position.x =  0.0523
             pose.position.y = -0.0336
-            pose.position.z =  0.6566 
+            pose.position.z =  0.5566 
             # pose.position.z = 5.0  # which is impossible
             pose.orientation.w = 1.0
 
