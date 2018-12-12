@@ -1,15 +1,10 @@
 <launch>
 
   <node name="fake_kinect2_stream" pkg="rosbag" type="play"
-    args="-l /home/dylan2/workspace/unknown-pick/dataset/2018-12-03-23-32-18.bag"
+    args="-l /home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/bagfile/2018-12-10-15-15-44.bag"
   />
 
-  <!-- <node name="decompress_color_img" pkg="image_transport" type="republish"
-    args="compressed in:=/kinect2/qhd/image_color_rect raw out:=/kinect2/qhd/image_color_rect"
-  />
-
-  <node name="decompress_depth_img" pkg="image_transport" type="republish"
-    args="compressed in:=/kinect2/qhd/image_depth_rect raw out:=/kinect2/qhd/image_depth_rect"
-  /> -->
+<!-- /home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/bagfile/2018-12-10-15-15-44.bag -->
+<!-- /home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/bagfile/2018-12-10-15-16-23.bag -->
 
 </launch>

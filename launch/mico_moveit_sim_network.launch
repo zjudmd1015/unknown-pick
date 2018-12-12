@@ -8,7 +8,7 @@
   # moveit stuff
   #####################################
   ## Loads robot urdf srdf to parameter server
-  <group if="$(arg eye_in_hand)">
+  <!-- <group if="$(arg eye_in_hand)">
     <include file="$(find moveit_generated)/launch/planning_context.launch">
       <arg name="load_robot_description_eye_in_hand" value="true"/>
     </include>
@@ -17,7 +17,7 @@
     <include file="$(find moveit_generated)/launch/planning_context.launch">
       <arg name="load_robot_description" value="true"/>
     </include>
-	</group>
+	</group> -->
 
 
   <include file="$(find moveit_generated)/launch/move_group.launch">

@@ -38,7 +38,11 @@ class MoveitGrasp:
         self.get_basic_info()
 
         ## listen to .../pose_goal to decide pose goal
-        self.go_home()
+        # rospy.logwarn("Type in 'start' to set robot arm in home position, and start working... ")
+        # k = ""
+        # while  k != "start":
+        #     k = raw_input()
+        self.go_home(config=0)
         self.open_gripper()
         # self.close_gripper()
         # self.open_gripper()
@@ -60,6 +64,9 @@ class MoveitGrasp:
         ## frame_transformation
         pose_mdworld = self.pose_frame_trans(pose_grasp)
 
+# FIXME: add a pre-grasp home position (avoid singularity and occlusion due to gripper in front of camera)
+        # self.go_home(config=1)
+
         ## plan and execute - pregrasp
         self.group.set_pose_target(pose_mdworld)
         plan = self.group.go(wait=True)
@@ -68,12 +75,13 @@ class MoveitGrasp:
         self.group.stop()
         self.group.clear_pose_targets()
         
-        ## approach -> close gripper -> retreive
+        ## approach -> close gripper -> retreive -> go home
         if plan:
             self.approach_eef(pose_grasp)
             self.close_gripper()
             self.retrieve_eef(pose_grasp)
-        self.go_home()
+            # self.go_home(config=1)
+        self.go_home(config=0)
         self.open_gripper()
         if self.is_clear_octomap:
             self.clear_octomap()
@@ -111,7 +119,7 @@ class MoveitGrasp:
 
         (plan, fraction) = self.group.compute_cartesian_path(
                                         waypoints,   # waypoints to follow
-                                        0.005,        # eef_step
+                                        0.002,        # eef_step
                                         0.0)         # jump_threshold
 
         ## display trajectory
@@ -136,7 +144,7 @@ class MoveitGrasp:
 
         (plan, fraction) = self.group.compute_cartesian_path(
                                         waypoints,   # waypoints to follow
-                                        0.005,        # eef_step
+                                        0.002,        # eef_step
                                         0.0)         # jump_threshold
 
         ## display trajectory
@@ -149,10 +157,6 @@ class MoveitGrasp:
         ## execute the planned path
         self.group.execute(plan, wait=True)
 
-    def go_home(self):
-        self.group.go(self.home_joint_values, wait=True)
-        self.group.stop()
-
     def init_ROS_and_moveit(self):
         ## init MoveIt!
         moveit_commander.roscpp_initialize(sys.argv)
@@ -160,7 +164,8 @@ class MoveitGrasp:
         self.scene = moveit_commander.PlanningSceneInterface()
         group_name = "mico_arm"
         self.group = moveit_commander.MoveGroupCommander(group_name)
-        self.home_joint_values = self.group.get_current_joint_values()
+        # self.home_joint_values = self.group.get_current_joint_values()
+        self.home_joint_values = self.set_home_joint_values(config=0)
 
         ## init ROS
         rospy.init_node('moveit_pregrasp', anonymous=False)
@@ -194,6 +199,43 @@ class MoveitGrasp:
         except rospy.ServiceException as e:
             print ("Service call failed: %s"%e)
         rospy.loginfo("Octomap cleared.")
+
+    def go_home(self, config=0):
+        if config == 0:
+            tmp_home_joint_values = self.set_home_joint_values(config=0)
+        elif config == 1:
+            tmp_home_joint_values = self.set_home_joint_values(config=1)
+
+        self.group.go(tmp_home_joint_values, wait=True)
+        self.group.stop()
+
+    def set_home_joint_values(self, config=0):
+        current_joint_values = self.group.get_current_joint_values()
+
+        if config == 0:
+            ## home config 0 - prefered home joint values
+            current_joint_values[0] = -0.5024237154549698
+            current_joint_values[1] = -0.0461999859584763
+            current_joint_values[2] =  0.378261685955241
+            current_joint_values[3] = -2.7024837288386943
+            current_joint_values[4] = -1.0150675779092277
+            current_joint_values[5] =  2.789353646752098
+        elif config == 1:
+            ## home config 1
+            current_joint_values[0] = -0.34151888731666213
+            current_joint_values[1] = -0.5833085097394489
+            current_joint_values[2] =  0.033693482792315536
+            current_joint_values[3] = -2.54547722780898
+            current_joint_values[4] = -0.9888911766777625
+            current_joint_values[5] =  2.9748245606556494
+
+        return current_joint_values
+
+
+
+
+
+
 
 
 

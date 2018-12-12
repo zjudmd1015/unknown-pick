@@ -14,6 +14,7 @@ from pyquaternion import Quaternion
 
 import tf2_ros
 from geometry_msgs.msg import TransformStamped
+from tf2_msgs.msg import TFMessage
 
 class PoseGoalGenerator:
     '''
@@ -30,10 +31,11 @@ class PoseGoalGenerator:
         ## parameter setup
         self.is_pose_goal_fixed = rospy.get_param("~is_pose_goal_fixed")
         self.grasp_detection_topic = rospy.get_param("~grasp_detection_topic")
+        self.tf_cam = rospy.get_param("~tf_cam")  # notice: it is a string
 
         ## utilities setup
-        self.sub = rospy.Subscriber(self.grasp_detection_topic, GraspConfigList, self.callback)
         self.pub = rospy.Publisher("~pose_goal", Pose, queue_size=1)
+        self.sub = rospy.Subscriber(self.grasp_detection_topic, GraspConfigList, self.callback)
         self.br = tf2_ros.TransformBroadcaster()  # tf2_ros broadcaster
         self.tf = None # initially no tf, so do not broadcast
         self.br_rate = rospy.Rate(10000) # 10k hz
@@ -59,16 +61,46 @@ class PoseGoalGenerator:
         else:
             rospy.loginfo('Received %d grasps.', len(self.grasps))
 
-            grasp = self.grasps[0] # grasps are sorted in descending order by score
-            print('Selected grasp with score:', grasp.score)
+            ## naive way to choose a grasp (just a highest score one)
+            # grasp = self.grasps[0] # grasps are sorted in descending order by score
+            # print('Selected grasp with score:', grasp.score)
+
+            grasp = self.choose_grasp(self.grasps)
             pose_goal = self.grasp2pose(grasp)
             
             self.pub.publish(pose_goal)
             # self.rate.sleep()
 
-    def choose_grasp(self, grasp):
-        pass
+    def choose_grasp(self, grasps):
+        thres = np.pi / 4  # angle threshold
+        cam_z = np.array([0.0, 0.0, 1.0])  # in camera frame
+
+        chosen_one = grasps[0] # first assign the hight score one as a chosen candidate
+        min_theta = 6.6  # can be any value bigger than pi
+        for idx, grasp in enumerate(grasps):
+            appr = grasp.approach
+            rz = np.array([appr.x, appr.y, appr.z])
+
+            theta = self.cal_angle(rz, cam_z)
+            rospy.logwarn("The chosen grasp is {} radians wrt. cam_z-axis.".format(theta))
+            ## in a top-down order, if a grasp angle is smaller then threshold, just use it
+            if theta <= thres:
+                min_theta = theta
+                chosen_one = grasp 
+                break
+            ## for first 5 candidates, if angle is smaller, update the chosen one
+            if idx < 10:
+                if theta < min_theta:
+                    min_theta = theta
+
+        print(min_theta)
+        return chosen_one
     
+    def cal_angle(self, v1, v2):
+        cos_theta = np.dot(v1, v2)/(np.linalg.norm(v1)*(np.linalg.norm(v2)))
+        theta = np.arccos(cos_theta)  # in radians
+        return theta
+
     def grasp2pose(self, grasp):
         '''
         Trans GPD msg format to Pose format, meanwhile broadcast a tf of grasp_frame.
@@ -109,7 +141,7 @@ class PoseGoalGenerator:
             ## for debug
             pose.position.x =  0.0523
             pose.position.y = -0.0336
-            pose.position.z =  0.5566 
+            pose.position.z =  0.6566 
             # pose.position.z = 5.0  # which is impossible
             pose.orientation.w = 1.0
 
@@ -131,7 +163,17 @@ class PoseGoalGenerator:
         if self.tf is not None:
             self.tf.header.stamp = rospy.Time.now()
             self.br.sendTransform(self.tf)
-        
+    
+    '''
+    def get_cam_z(self):
+        # rospy.logwarn(self.tf_cam)
+        tf_cam_unpack = [float(i) for i in self.tf_cam.split(' ')]
+        x,y,z,qx,qy,qz,qw = tf_cam_unpack
+        rot = Quaternion([qw,qx,qy,qz]).rotation_matrix
+        cam_z = rot[:,2]
+
+        return cam_z
+    '''
 
 def main():
     pg_gen = PoseGoalGenerator()
