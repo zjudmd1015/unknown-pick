@@ -9,6 +9,10 @@
   <arg name="is_use_real_mico" default="false" />
 
   <arg name="is_pose_goal_fixed" default="true" doc="fixed pose goal, for debug use" />
+  
+  <arg name="is_discard_object" default="false" />
+  <arg name="is_discard_obstacle" default="false" />  
+  
   <arg name="is_use_GPD" default="true" />
 
   <arg name="GPD_num_selected" default="20" />
@@ -46,10 +50,10 @@
   <node name="cloud_segmentor" pkg="unknown_pick" type="segment_cloud_v3" output="screen">
     <rosparam file="$(find unknown_pick)/config/cam_intrinsic.yaml" command="load" /> 
 
-    <remap from="/cloud_object" to="/cloud_object/unfiltered" if="$(arg is_filter_pointcloud)" />
-    <!-- <remap from="/cloud_object" to="/cloud_object_whatever" if="$(arg is_filter_pointcloud)" /> -->
-    <!-- <remap from="/cloud_obstacle" to="/cloud_obstacle/unfiltered" if="$(arg is_filter_pointcloud)" /> -->
-    <remap from="/cloud_obstacle" to="/cloud_obstacle_whatever" if="$(arg is_filter_pointcloud)" />
+    <remap from="/cloud_object" to="/cloud_object/unfiltered" if="$(eval arg('is_filter_pointcloud') and not arg('is_discard_object'))" />
+    <remap from="/cloud_object" to="/cloud_object_whatever" if="$(eval arg('is_filter_pointcloud') and arg('is_discard_object'))" />
+    <remap from="/cloud_obstacle" to="/cloud_obstacle/unfiltered" if="$(eval arg('is_filter_pointcloud') and not arg('is_discard_obstacle'))" />
+    <remap from="/cloud_obstacle" to="/cloud_obstacle_whatever" if="$(eval arg('is_filter_pointcloud') and arg('is_discard_obstacle'))" />
   </node>
 
   <!-- pcl filter nodelets -->
