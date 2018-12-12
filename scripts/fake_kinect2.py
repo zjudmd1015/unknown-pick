@@ -19,9 +19,9 @@ import cv2
 
 def main():
     bgr_img = cv2.imread(
-        "/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/sample3/0001_color.jpg")
+        "/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/sample2/0000_color.jpg")
     depth_img = cv2.imread(
-        "/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/sample3/0001_depth.png", -1)
+        "/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/sample2/0000_depth.png", -1)
 
     ## ROS node setup
     rospy.init_node("fake_kinect2_publisher", anonymous = False)

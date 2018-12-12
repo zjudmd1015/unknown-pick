@@ -79,7 +79,7 @@ class MaskGenerator:
 
 #FIXME the file can also be passed from local file, but not ROS message
         is_found = True
-        obj_mask_cv2 = cv2.imread('/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/sample3/mask_255.jpg', -1)
+        obj_mask_cv2 = cv2.imread('/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/sample2/mask_255.jpg', -1)
         obj_mask_ros = self.bridge.cv2_to_imgmsg(obj_mask_cv2, "mono8")
 
         print('------ ------    END     ------ ------')

@@ -22,7 +22,7 @@ from std_srvs.srv import Empty
 class MoveitGrasp:
     
     def __init__(self):
-        rospy.sleep(5.)
+        rospy.sleep(3.)
 
         ## initialize important parameters
         self.pregrasp_stepback = 0.2
@@ -119,7 +119,7 @@ class MoveitGrasp:
 
         (plan, fraction) = self.group.compute_cartesian_path(
                                         waypoints,   # waypoints to follow
-                                        0.002,        # eef_step
+                                        0.01,        # eef_step
                                         0.0)         # jump_threshold
 
         ## display trajectory
@@ -144,7 +144,7 @@ class MoveitGrasp:
 
         (plan, fraction) = self.group.compute_cartesian_path(
                                         waypoints,   # waypoints to follow
-                                        0.002,        # eef_step
+                                        0.01,        # eef_step
                                         0.0)         # jump_threshold
 
         ## display trajectory

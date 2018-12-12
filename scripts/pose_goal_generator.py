@@ -106,7 +106,7 @@ class PoseGoalGenerator:
         Trans GPD msg format to Pose format, meanwhile broadcast a tf of grasp_frame.
         '''
         ## Pose
-        pose = Pose()
+        pose = Pose()  # in 'camera_frame'
         if not self.is_pose_goal_fixed:
             ## for MICO Robot
             pose.position = grasp.bottom
@@ -139,11 +139,19 @@ class PoseGoalGenerator:
             # pose.orientation.z = quat[3]
         else:
             ## for debug
-            pose.position.x =  0.0523
-            pose.position.y = -0.0336
-            pose.position.z =  0.6566 
+            # sample 3
+            # pose.position.x =  0.0423
+            # pose.position.y =  0.0636
+            # pose.position.z =  0.6566 
+
+            # sample 2
+            pose.position.x =  0.0623
+            pose.position.y =  0.0436
+            pose.position.z =  0.7366 
+
             # pose.position.z = 5.0  # which is impossible
-            pose.orientation.w = 1.0
+            pose.orientation.z = np.sin(np.pi/2)
+            pose.orientation.w = np.cos(np.pi/2)
 
         ## tf 'grasp_frame'
         t = TransformStamped()

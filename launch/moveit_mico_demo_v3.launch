@@ -8,7 +8,7 @@
   <arg name="is_use_gazebo_sim" default="true" />
   <arg name="is_use_real_mico" default="false" />
 
-  <arg name="is_pose_goal_fixed" default="false" doc="fixed pose goal, for debug use" />
+  <arg name="is_pose_goal_fixed" default="true" doc="fixed pose goal, for debug use" />
   <arg name="is_use_GPD" default="true" />
 
   <arg name="GPD_num_selected" default="20" />
