@@ -159,6 +159,7 @@ include_directories(
 
 # add_executable(segment_cloud_v2 src/segment_cloud_v2.cpp)
 add_executable(segment_cloud_v3 src/segment_cloud_v3.cpp)
+add_executable(gen_naive_pose src/gen_naive_pose.cpp)
 
 
 
@@ -182,7 +183,7 @@ add_executable(segment_cloud_v3 src/segment_cloud_v3.cpp)
 
 # target_link_libraries(segment_cloud_v2 ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 target_link_libraries(segment_cloud_v3 ${catkin_LIBRARIES} ${PCL_LIBRARIES})
-
+target_link_libraries(gen_naive_pose ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 
 

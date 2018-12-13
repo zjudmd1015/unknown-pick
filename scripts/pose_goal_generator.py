@@ -31,7 +31,7 @@ class PoseGoalGenerator:
         ## parameter setup
         self.is_pose_goal_fixed = rospy.get_param("~is_pose_goal_fixed")
         self.grasp_detection_topic = rospy.get_param("~grasp_detection_topic")
-        self.tf_cam = rospy.get_param("~tf_cam")  # notice: it is a string
+        # self.tf_cam = rospy.get_param("~tf_cam")  # notice: it is a string
 
         ## utilities setup
         self.pub = rospy.Publisher("~pose_goal", Pose, queue_size=1)
@@ -73,7 +73,7 @@ class PoseGoalGenerator:
 
     def choose_grasp(self, grasps):
         thres = np.pi / 4  # angle threshold
-        cam_z = np.array([0.0, 0.0, 1.0])  # in camera frame
+        cam_z = np.array([0.0, 0.0, 1.0])  # in camera frame !!!
 
         chosen_one = grasps[0] # first assign the hight score one as a chosen candidate
         min_theta = 6.6  # can be any value bigger than pi

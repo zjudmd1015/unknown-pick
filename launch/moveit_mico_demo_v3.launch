@@ -4,15 +4,14 @@
 
 <launch>
   <!-- arguments -->
-  <arg name="is_use_rviz_demo" default="false" />
-  <arg name="is_use_gazebo_sim" default="true" />
+  <arg name="is_use_rviz_demo" default="true" />
+  <arg name="is_use_gazebo_sim" default="false" />
   <arg name="is_use_real_mico" default="false" />
 
-  <arg name="is_pose_goal_fixed" default="true" doc="fixed pose goal, for debug use" />
-  
   <arg name="is_discard_object" default="false" />
   <arg name="is_discard_obstacle" default="false" />  
-  
+
+  <arg name="is_pose_goal_fixed" default="true" doc="fixed pose goal, for debug use" />
   <arg name="is_use_GPD" default="true" />
 
   <arg name="GPD_num_selected" default="20" />
@@ -61,17 +60,18 @@
   </include>
 
   <!-- GPD package - generate suitable grasps -->
-  <include file="$(find unknown_pick)/launch/grasp_detector.launch" >
+  <!-- <include file="$(find unknown_pick)/launch/grasp_detector.launch" >
     <arg name="cloud_topic" default="/cloud_object_whatever" unless="$(arg is_use_GPD)" />
     <arg name="num_selected" default="$(arg GPD_num_selected)" />
-  </include> 
+  </include>  -->
 
   <!-- pose goal generator - convert GPD format into a pose -->
-  <node name="pose_goal_generator" pkg="unknown_pick" type="pose_goal_generator.py" output="screen" >
+  <!-- <node name="pose_goal_generator" pkg="unknown_pick" type="pose_goal_generator.py" output="screen" >
     <param name="is_pose_goal_fixed" value="$(arg is_pose_goal_fixed)" />
     <param name="grasp_detection_topic" value="$(arg grasp_detection_topic)" />
-    <param name="tf_cam" value="$(arg tf_cam)" />
-  </node>
+  </node> -->
+
+  <node name="pose_goal_generator" pkg="unknown_pick" type="gen_naive_pose" output="screen" />
 
   <!-- Use MoveIt! command to config robot arm -->
   <node name="moveit_grasp" pkg="unknown_pick" type="moveit_grasp.py" output="screen"/>
