@@ -1,9 +1,0 @@
-<launch>                                                                        
-  <node pkg="image_publisher" type="image_publisher" name="test_"
-        args="/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/0001_color.jpg" >
-    <param name="flip_horizontal" value="false" />
-    <param name="flip_vertical" value="false" />
-    <param name="frame_id" value="mdworld" />
-    <param name="publish_rate" value="1" />
-  </node>
-</launch>

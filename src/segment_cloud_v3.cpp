@@ -260,10 +260,10 @@ bool CloudSegmentor::callback(unknown_pick::seg_req::Request &req, unknown_pick:
       ros_cloud_obstacle->header.frame_id = "camera_frame";
 
       // save the cloud, clear the data and exit
-      pcl::io::savePCDFile("/home/dylan2/unknown_pick_ws/src/unknown_pick/debug/object.pcd", *cloud);
+      // pcl::io::savePCDFile("/home/dylan2/unknown_pick_ws/src/unknown_pick/debug/object.pcd", *cloud);
       cloud->points.clear();
       cloud_obstacle->points.clear();
-      cout << "Debug info saved." << endl;
+      // cout << "Debug info saved." << endl;
 
       // publish ROS topic 
       // ros::Rate r(5);
