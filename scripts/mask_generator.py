@@ -1,23 +1,29 @@
 #!/usr/bin/env python
+## working on virturalenv: mask_rcnn (dependencies refer to: https://github.com/matterport/Mask_RCNN)
+## Reference: https://github.com/matterport/Mask_RCNN
 
-## working on virturalenv: mask_rcnn
 
-#### Author: Miaoding Dai (m.dai AT u.northwestern.edu DOT com)
-#### Reference: https://github.com/matterport/Mask_RCNN
-
+####################################
+# basic environment setup
+####################################
 import os
 import sys
-#FIXME package incompatiblity
-sys.path.remove("/opt/ros/kinetic/lib/python2.7/dist-packages")
 import math
 import numpy as np
 import skimage.io
-import matplotlib
 import matplotlib.pyplot as plt
+
+#FIXME package incompatiblity
+sys.path.insert(1, "/home/dylan2/ws_catkin/install/lib/python3/dist-packages")
+sys.path.remove("/opt/ros/kinetic/lib/python2.7/dist-packages")
+sys.path.append("/opt/ros/kinetic/lib/python2.7/dist-packages")
+
+####################################
+# Mask RCNN environment setup
+####################################
 
 # Root directory of the project - Mask RCNN
 ROOT_DIR = os.path.abspath("/home/dylan2/libraries/Mask_RCNN/")
-
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
 from mrcnn import utils
@@ -34,12 +40,12 @@ COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 if not os.path.exists(COCO_MODEL_PATH):
     utils.download_trained_weights(COCO_MODEL_PATH)
 
-## ROS related preparation
-sys.path.append("/opt/ros/kinetic/lib/python2.7/dist-packages")
+####################################
+# ROS environment setup
+####################################
 import rospy
 import cv2
 from sensor_msgs.msg import Image
-sys.path.insert(1, "/home/dylan2/ws_catkin/install/lib/python3/dist-packages")
 from cv_bridge import CvBridge, CvBridgeError
 from unknown_pick.srv import *
 

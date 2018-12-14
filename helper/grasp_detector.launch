@@ -1,9 +1,23 @@
 <launch>
+
+  ####################################
+  ## grasp_detector.launch
+  #### Source: https://github.com/atenpas/gpd
+  #### Dependencies:
+  ####   1. GPD: https://github.com/atenpas/gpd
+  #### Function:
+  ####   Wrapper of GPD code.
+  ####################################
+
+  ####################################
+  # arguments
+  ####################################
   <arg name="cloud_topic" default="/cloud_object" />
   <arg name="num_selected" default="3" />
 
-  <!-- **************************************** -->
-
+  ####################################
+  # default pipeline of GPD
+  ####################################
   <arg name="device"                     default="0"
         doc="target device to execute inference. [0:CPU]|1:GPU|2:VPU|3:FPGA" />
 

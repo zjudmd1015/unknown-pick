@@ -2,10 +2,10 @@
 notes
 .vscode/
 kinect_cal_data/
-testdata/
 debug/
 folded/
-
+helper/git_not_track/
+testdata/git_not_track/
 
 
 

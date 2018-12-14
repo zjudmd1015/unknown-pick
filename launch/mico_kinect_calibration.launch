@@ -1,20 +1,28 @@
-<!-- This launch file is used to calibrate the relative position and orientation of camera frame wrt. mdworld -->
-<!-- Reference: https://github.com/IFL-CAMP/easy_handeye -->
-
-<!-- Original of this launch file is from mico_perception/ easy_handeye/ mico_kinect_calibration -->
-
-
 <launch>
-    <!--arg name="namespace_prefix" default="ur5_kinect_handeyecalibration" /-->
 
+    ####################################
+    ## mico_kinect_calibration.launch
+    #### Reference: https://github.com/IFL-CAMP/easy_handeye
+    #### Dependencies: 
+    ####   1. ros-kinetic-aruco
+    ####   2. mico_base (Argallab: argallab.northwestern.edu)
+    ####   3. kinect_bridge (https://github.com/code-iai/iai_kinect2)
+    #### Function:
+    ####   This launch file is used to calibrate the relative position 
+    ####   and orientation of camera frame wrt. mico base frame.
+    ####################################
 
+    ####################################
+    # arguments
+    ####################################
     <arg name="marker_size" default="0.100" doc="Size of the ArUco marker used, in meters" />
     <arg name="marker_id" default="566" doc="The ID of the ArUco marker used" />
 
+    ####################################
+    # components
+    ####################################
     <!-- start the Kinect -->
-    <!--include file="$(find freenect_launch)/launch/freenect.launch" >
-        <arg name="depth_registration" value="true" />
-    </include-->
+    <include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch" if="$(arg is_use_kinect2_bridge)" />
 
     <!-- start ArUco -->
     <node name="aruco_tracker" pkg="aruco_ros" type="single">
@@ -28,14 +36,8 @@
         <param name="marker_frame"       value="marker_frame" />
     </node>
 
+    ## launch "mico_hardware.launch" to launch the robot Mico
     <!-- start the robot -->
-    <!--include file="$(find ur_bringup)/launch/ur5_bringup.launch">
-        <arg name="limited" value="true" />
-        <arg name="robot_ip" value="192.168.0.21" />
-    </include>
-    <include file="$(find ur5_moveit_config)/launch/ur5_moveit_planning_execution.launch">
-        <arg name="limited" value="true" />
-    </include-->
 
     <!-- start easy_handeye -->
     <include file="$(find easy_handeye)/launch/calibrate.launch" >

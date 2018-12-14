@@ -72,7 +72,7 @@ class PoseGoalGenerator:
             # self.rate.sleep()
 
     def choose_grasp(self, grasps):
-        thres = np.pi / 4  # angle threshold
+        thres = np.pi / 6  # angle threshold
         cam_z = np.array([0.0, 0.0, 1.0])  # in camera frame !!!
 
         chosen_one = grasps[0] # first assign the hight score one as a chosen candidate
@@ -89,7 +89,7 @@ class PoseGoalGenerator:
                 chosen_one = grasp 
                 break
             ## for first 5 candidates, if angle is smaller, update the chosen one
-            if idx < 10:
+            if idx < 20:
                 if theta < min_theta:
                     min_theta = theta
 
@@ -104,6 +104,10 @@ class PoseGoalGenerator:
     def grasp2pose(self, grasp):
         '''
         Trans GPD msg format to Pose format, meanwhile broadcast a tf of grasp_frame.
+
+        ## Notice ##
+        # 1. notice the order from pyquaternion.Quaternion and Pose msg is different;
+        # 2. notice that the EEF frame config might be different from different robots;
         '''
         ## Pose
         pose = Pose()  # in 'camera_frame'
@@ -138,7 +142,7 @@ class PoseGoalGenerator:
             # pose.orientation.y = quat[2]
             # pose.orientation.z = quat[3]
         else:
-            ## for debug
+            ## fixed pose for debugging
             # sample 3
             # pose.position.x =  0.0423
             # pose.position.y =  0.0636
@@ -148,8 +152,8 @@ class PoseGoalGenerator:
             pose.position.x =  0.0623
             pose.position.y =  0.0436
             pose.position.z =  0.7366 
-
             # pose.position.z = 5.0  # which is impossible
+            
             pose.orientation.z = np.sin(np.pi/2)
             pose.orientation.w = np.cos(np.pi/2)
 

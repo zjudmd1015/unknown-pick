@@ -5,8 +5,6 @@ camera_cy: 262.72
 camera_fx: 527.35
 camera_fy: 527.04
 
-
-
 # Kinect2 in D110 (065618241047)
 # camera_factor: 1000
 # camera_cx: 474.82

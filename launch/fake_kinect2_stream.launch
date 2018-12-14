@@ -1,5 +1,16 @@
 <launch>
 
+  ####################################
+  ## fake_kinect2_stream.launch
+  #### Function:
+  ####   Simulate kinect2 stream using rosbag file.
+  #### Notes:
+  ####   1. this .bag file should include 3 topics:
+  ####        - /kinect2/qhd/camera_info
+  ####        - /kinect2/qhd/image_color_rect
+  ####        - /kinect2/qhd/image_depth_rect
+  ####################################
+
   <node name="fake_kinect2_stream" pkg="rosbag" type="play"
     args="-l /home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/bagfile/2018-12-10-15-15-44.bag"
   />
@@ -7,4 +18,5 @@
 <!-- /home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/bagfile/2018-12-10-15-15-44.bag -->
 <!-- /home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/bagfile/2018-12-10-15-16-23.bag -->
 
-</launch>
+</launch> 
+

@@ -1,6 +1,11 @@
 <launch>
 
-  <!-- **************************************** -->
+  ####################################
+  ## pcl_filter.launch
+  #### Auther: Miaoding (m.dai AT u.northwestern.edu DOT com)
+  #### Function:
+  ####   Utilize pcl_ros nodelets to process pointclouds.
+  ####################################
 
   <node pkg="nodelet" type="nodelet" name="pcl_filter_manager"  args="manager"/>
 

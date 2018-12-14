@@ -1,6 +1,18 @@
 <?xml version="1.0"?>
 <launch>
 
+  ####################################
+  ## mico_moveit_network.launch
+  #### Reference: mico_base -> mico_interaction (Argallab: argallab.northwestern.edu)
+  #### Dependencies: 
+  ####   1. mico_base (Argallab: argallab.northwestern.edu)
+  #### Function:
+  ####   Launch MoveIt! stuff when ROS networking.
+  #### Notes:
+  ####   1. Separated by mico_base -> mico_interaction -> mico_moveit.launch;
+  ####   2. use this launch file together with 'mico_hardware.launch'; 
+  ####################################
+
   #####################################
   # moveit stuff
   #####################################
@@ -15,10 +27,11 @@
   <param name="move_group/trajectory_execution/allowed_execution_duration_scaling" value="1.5" />
   <param name="move_group/trajectory_execution/execution_duration_monitoring" value="true" />
 
+  ## this file is launched on master computer (lab desktop computer)
+  ##   - within "mico_hardware.launch" file
   <!-- <include file="$(find moveit_generated)/launch/planning_context.launch">
     <arg name="load_robot_description" value="true"/>
   </include> -->
-
 
   <include file="$(find moveit_generated)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
@@ -26,7 +39,6 @@
     <arg name="info" value="true"/>
     <arg name="debug" value="false"/>
   </include>
-
 
    <!-- Run Rviz and load the default config to see the state of the move_group node -->
   <include file="$(find moveit_generated)/launch/moveit_rviz.launch">
@@ -38,6 +50,6 @@
   # basic environment rviz
   #####################################
 
-  <node pkg="mico_interaction" type="basic_mico_environment.py" name="basic_mico_environment" output="screen"/>
+  <node name="mdworld_mico_env" pkg="unknown_pick" type="mdworld_mico_env.py" output="screen"/>
 
 </launch>

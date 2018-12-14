@@ -1,27 +1,34 @@
 #!/usr/bin/env python
 
-## working on virturalenv: mask_rcnn
-
-#### Author: Miaoding Dai (m.dai AT u.northwestern.edu DOT com)
+####################################
+## test_mask_gen_service.py
+#### Auther: Miaoding (m.dai AT u.northwestern.edu DOT com)
+#### Dependencies: 
+####   1. mask_rcnn (https://github.com/matterport/Mask_RCNN)
+#### Function:
+####   A testing script for mask_generator service.
+#### Notes:
+####   1. working on virturalenv 'mask_rcnn';
+####################################
 
 import sys
+
+#FIXME package incompatiblity
+sys.path.insert(1, "/home/dylan2/ws_catkin/install/lib/python3/dist-packages")
+sys.path.remove("/opt/ros/kinetic/lib/python2.7/dist-packages")
+sys.path.append("/opt/ros/kinetic/lib/python2.7/dist-packages")
+
 import rospy
 import numpy as np
-sys.path.remove("/opt/ros/kinetic/lib/python2.7/dist-packages")
 import cv2
-sys.path.append("/opt/ros/kinetic/lib/python2.7/dist-packages")
 import matplotlib.pyplot as plt
-# from sensor_msgs.msg import Image
-sys.path.insert(1, "/home/dylan2/ws_catkin/install/lib/python3/dist-packages")
 from cv_bridge import CvBridge, CvBridgeError
 from unknown_pick.srv import *
 
-
 def main():
     bridge = CvBridge()
-    bgr_img = cv2.imread('/home/dylan2/workspace/unknown-pick/dataset/mask_rcnn/0001_color.jpg')
-    interested_obj = "orange"
-
+    bgr_img = cv2.imread('/home/dylan2/unknown_pick_ws/src/unknown_pick/testdata/sample3/0001_color.jpg')
+    interested_obj = "apple"
 
     try:
         ros_image = bridge.cv2_to_imgmsg(bgr_img, "bgr8")

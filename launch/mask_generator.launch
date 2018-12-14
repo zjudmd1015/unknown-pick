@@ -1,18 +1,20 @@
 <!-- launch in virtualenv 'mask_rcnn' -->
 
 <launch>
-  <arg name="is_use_fake_kinect2" default="false" />
-  <arg name="is_use_fake_mask_generator" default="false" />
 
-
-  <!-- **************************************** -->
+  ####################################
+  ## mask_generator.launch
+  #### Auther: Miaoding (m.dai AT u.northwestern.edu DOT com)
+  #### Dependencies: 
+  ####   1. mask_rcnn (https://github.com/matterport/Mask_RCNN)
+  #### Function:
+  ####   Run and respawn 'mask_generator' node.
+  #### Notes:
+  ####   1. launch this in virtualenv 'mask_rcnn';
+  ####   2. Currently no decent solutions for dying 'mask_generator' node, so just keep respawning it;
+  ####################################
   
-  <!-- kinect2 -->
-  <node name="fake_kinect2_publisher" pkg="unknown_pick" type="fake_kinect2.py" if="$(arg is_use_fake_kinect2)" output="screen" />
-
   <!-- mask generator -->
-  <node name="mask_generator" pkg="unknown_pick" type="fake_mask_generator.py" if="$(arg is_use_fake_mask_generator)" output="screen"/>
-  <node name="mask_generator" pkg="unknown_pick" type="mask_generator.py" unless="$(arg is_use_fake_mask_generator)" respawn="true" output="screen" >
-  </node>
+  <node name="mask_generator" pkg="unknown_pick" type="mask_generator.py" respawn="true" output="screen" />
 
 </launch>

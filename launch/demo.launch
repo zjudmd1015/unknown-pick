@@ -1,57 +1,90 @@
-<!-- Do not launch this in virtualenv -->
-<!-- fake_mask_generator & fake_kinect2 should be open in virtualenv 'mask_rcnn'  -->
-<!-- mask_generator should be open in virtualenv 'mask_rcnn' -->
-
 <launch>
-  <!-- arguments -->
-  <arg name="is_use_rviz_demo" default="true" />
-  <arg name="is_use_gazebo_sim" default="false" />
-  <arg name="is_use_real_mico" default="false" />
 
+  ####################################
+  ## demo.launch 
+  #### Auther: Miaoding (m.dai AT u.northwestern.edu DOT com)
+  #### Dependencies: 
+  ####   1. mico_base (Argallab: argallab.northwestern.edu)
+  ####   2. kinect_bridge (https://github.com/code-iai/iai_kinect2)
+  #### Function:
+  ####   Main launch file of unknown_pick package.
+  #### Notes:
+  ####   1. do not launch this in virtualenv 'mask_rcnn';
+  ####   2. 'mask_generator.launch' should be launched in virtualenv 'mask_rcnn' independently;
+  ####################################
+
+  ####################################
+  # arguments
+  ####################################
+  
+  ## frequently modified ones
+  <arg name="is_use_rviz_demo" default="false" />
+  <arg name="is_use_gazebo_sim" default="false" />
+  <arg name="is_use_real_mico" default="true" />
+
+  <arg name="is_use_kinect2_bridge" default="true" 
+          doc="whether or not use the real Kinect 2" />
+ 
   <arg name="is_discard_object" default="false" />
   <arg name="is_discard_obstacle" default="false" />  
 
-
-  <arg name="is_use_naive_pose_goal" default="true" 
+  <arg name="is_use_naive_pose_goal" default="false" 
           doc="'true' for use naive_pose_goal, 'false' for use GPD" />
+
+  ## less frequently modified ones
+  <!-- used together with GPD pose goal generator, not used if 'is_use_naive_pose_goal' is true -->
   <arg name="is_pose_goal_fixed" default="false" 
-          doc="fixed pose goal, for debug use" />
+          doc="fix pose goal, for debug use" />
 
-  <arg name="GPD_num_selected" default="20" />
-  <arg name="is_filter_pointcloud" default="true" />
-  <arg name="grasp_detection_topic" default="/detect_grasps/clustered_grasps" />
+  ## rarely modified ones
   <arg name="tf_cam" default="0.580962087492 0.0651224924142 0.37562071577 -0.29227172725 -0.771322050498 0.535448584394 0.181478222761" />
-
-  <!-- **************************************** -->
-
-  <!-- Frames setup - 'to_camera_frame' transformation comes from calibration -->
+  <arg name="is_filter_pointcloud" default="true" />
+  <arg name="GPD_num_selected" default="30" />
+  <arg name="grasp_detection_topic" default="/detect_grasps/clustered_grasps" />
+  
+  ####################################
+  # tf setup 
+  ####################################
   <node name="to_mico_base" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 1 mdworld world" />
-  <!-- <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" args="0 0.1 0.4 0 3.1415926 1.0 mdworld camera_frame" 
-      if="$(eval arg('is_use_rviz_demo') or arg('is_use_gazebo_sim'))" /> -->
-
-  <!-- <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" 
-      args="$(arg tf_cam) mdworld camera_frame" 
-      if="$(arg is_use_real_mico)"/> -->
+  <!-- 'to_camera_frame' transformation comes from calibration -->
   <node name="to_camera_frame" pkg="tf2_ros" type="static_transform_publisher" 
       args="$(arg tf_cam) mdworld camera_frame" />
 
+  ####################################
+  # real Mico MoveIt! setup (ROS networking)
+  ####################################
+  <include file="$(find unknown_pick)/launch/mico_moveit_network.launch" if="$(arg is_use_real_mico)" />
 
-
-  <!-- coordinator node -->
-  <node name="unknown_pick_coordinator" pkg="unknown_pick" type="coordinator.py" />
-
-
+  ####################################
+  # simulation MoveIt! setup
+  ####################################
+  
+  ## demo in RViz
   <!-- basic environment in RViz -->
-  <node name="basic_mico_environment" pkg="mico_interaction" type="basic_mico_environment.py" output="screen" />
+  <node name="mdworld_mico_env" pkg="unknown_pick" type="mdworld_mico_env.py" output="screen" if="$(arg is_use_rviz_demo)" />
   <!-- MoveIt! RViz demo -->
   <include file="$(find moveit_generated)/launch/demo.launch" if="$(arg is_use_rviz_demo)" />
+
+  ## demo in Gazebo simulation
   <!-- Gazebo Sim and Rviz -->
   <include file="$(find mico_interaction)/launch/mico_moveit_sim.launch" if="$(arg is_use_gazebo_sim)" />
 
+  ####################################
+  # pipeline 
+  ####################################
+
+  ## coordinate
+  <!-- coordinator node -->
+  <node name="unknown_pick_coordinator" pkg="unknown_pick" type="coordinator.py" />
+
+  ## connect to RGB-D sensor (Kinect2)
+  <!-- launch kinect2 through kinect2_bridge (from iai_kinect2 package) -->
+  <include file="$(find kinect2_bridge)/launch/kinect2_bridge.launch" if="$(arg is_use_kinect2_bridge)" />
+
+  ## perception
   <!-- segment cloud -->
   <node name="cloud_segmentor" pkg="unknown_pick" type="segment_cloud_v3" output="screen">
     <rosparam file="$(find unknown_pick)/config/cam_intrinsic.yaml" command="load" /> 
-
     <remap from="/cloud_object" to="/cloud_object/unfiltered" if="$(eval arg('is_filter_pointcloud') and not arg('is_discard_object'))" />
     <remap from="/cloud_object" to="/cloud_object_whatever" if="$(eval arg('is_filter_pointcloud') and arg('is_discard_object'))" />
     <remap from="/cloud_obstacle" to="/cloud_obstacle/unfiltered" if="$(eval arg('is_filter_pointcloud') and not arg('is_discard_obstacle'))" />
@@ -59,11 +92,9 @@
   </node>
 
   <!-- pcl filter nodelets -->
-  <include file="$(find unknown_pick)/launch/pcl_filter.launch" if="$(arg is_filter_pointcloud)" >
-  </include>
+  <include file="$(find unknown_pick)/launch/pcl_filter.launch" if="$(arg is_filter_pointcloud)" />
 
-
-  <!-- Generate grasp pose -->
+  ## grasp detection
   <group if="$(arg is_use_naive_pose_goal)">
     <!-- naive pose goal generator -->
     <node name="pose_goal_generator" pkg="unknown_pick" type="gen_naive_pose" output="screen" />
@@ -81,7 +112,7 @@
     </node>
   </group>
 
-
+  ## plan and execution
   <!-- Use MoveIt! command to config robot arm -->
   <node name="moveit_grasp" pkg="unknown_pick" type="moveit_grasp.py" output="screen"/>
 

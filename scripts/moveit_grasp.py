@@ -26,18 +26,14 @@ class MoveitGrasp:
 
         ## initialize important parameters
         self.pregrasp_stepback = 0.2
+        self.grasp_push_dist = 0.03  # push the gripper forward to grasp objects more
         self.is_clear_octomap = True
         
         ## ROS init
         self.init_ROS_and_moveit()
 
-        ## for offline debug
-        # self.get_basic_info()
-        # self.plan_pose_goal()
-        # self.plan_cartesian_path()
+        ## robot start working
         self.get_basic_info()
-
-        ## listen to .../pose_goal to decide pose goal
         # rospy.logwarn("Type in 'start' to set robot arm in home position, and start working... ")
         # k = ""
         # while  k != "start":
@@ -77,6 +73,8 @@ class MoveitGrasp:
         
         ## approach -> close gripper -> retreive -> go home
         if plan:
+            # self.clear_octomap()
+            # self.open_gripper()
             self.approach_eef(pose_grasp)
             self.close_gripper()
             self.retrieve_eef(pose_grasp)
@@ -87,11 +85,9 @@ class MoveitGrasp:
             self.clear_octomap()
 
     def open_gripper(self):
-        self.group_gripper = moveit_commander.MoveGroupCommander("mico_gripper")
-
         gripper_goal = self.group_gripper.get_current_joint_values()
-        gripper_goal[0] = 0.0
-        gripper_goal[1] = 0.0
+        gripper_goal[0] = 0.2
+        gripper_goal[1] = 0.2
 
         plan = self.group_gripper.go(gripper_goal, wait=True)
         if not plan:
@@ -100,8 +96,8 @@ class MoveitGrasp:
 
     def close_gripper(self):
         gripper_goal = self.group_gripper.get_current_joint_values()
-        gripper_goal[0] = 0.8
-        gripper_goal[1] = 0.8
+        gripper_goal[0] = 1.0
+        gripper_goal[1] = 1.0
         plan = self.group_gripper.go(gripper_goal, wait=True)
         if not plan:
             rospy.logerr("****** mico_gripper close_gripper || plan failed ******")
@@ -111,7 +107,8 @@ class MoveitGrasp:
         waypoints = []
         scale = 1
 
-        pose_grasp.pose.position.z += scale * self.pregrasp_stepback
+        pose_grasp.pose.position.z += scale * self.pregrasp_stepback 
+        pose_grasp.pose.position.z += scale * self.grasp_push_dist
         pose_mdworld = self.pose_frame_trans(pose_grasp)
 
         wpose = pose_mdworld.pose
@@ -137,6 +134,7 @@ class MoveitGrasp:
         scale = 1
 
         pose_grasp.pose.position.z -= scale * self.pregrasp_stepback
+        pose_grasp.pose.position.z -= scale * self.grasp_push_dist
         pose_mdworld = self.pose_frame_trans(pose_grasp)
 
         wpose = pose_mdworld.pose
@@ -162,8 +160,8 @@ class MoveitGrasp:
         moveit_commander.roscpp_initialize(sys.argv)
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
-        group_name = "mico_arm"
-        self.group = moveit_commander.MoveGroupCommander(group_name)
+        self.group = moveit_commander.MoveGroupCommander("mico_arm")
+        self.group_gripper = moveit_commander.MoveGroupCommander("mico_gripper")
         # self.home_joint_values = self.group.get_current_joint_values()
         self.home_joint_values = self.set_home_joint_values(config=0)
 
@@ -240,53 +238,7 @@ class MoveitGrasp:
 
 
 
-    def plan_pose_goal(self):
-        ## plan a motion for this group to a desired pose for the end-effector
-        pose_goal = geometry_msgs.msg.PoseStamped()
-        pose_goal.pose.position.x = -0.1523
-        pose_goal.pose.position.y = -0.0336
-        pose_goal.pose.position.z =  0.6566 - 0.3  # roughly as a pregrasp pose (here in camera_frame)
 
-        ## Notice ##
-        # 1. notice the order from pyquaternion.Quaternion and Pose msg is different
-        # 2. notice that the EEF frame config might be different from different robots
-
-        pose_goal.pose.orientation.w = 1.0
-        
-        pose_goal.pose.orientation.w =  0.74186651
-        pose_goal.pose.orientation.x = -0.07337342
-        pose_goal.pose.orientation.y =  0.45955304
-        pose_goal.pose.orientation.z = -0.48276436
-
-## FIXME: this part should be organized
-#### for tf2_ros pose transform
-        print("!!!!!!!!!!!!!!!!!!", pose_goal.header.frame_id)  # should be "" (nothing) for now
-
-        import tf2_ros
-        import tf2_geometry_msgs
-
-        tf_buffer = tf2_ros.Buffer(rospy.Duration(10.0)) # tf buffer length
-        tf_listener = tf2_ros.TransformListener(tf_buffer)
-        try:
-            transform = tf_buffer.lookup_transform( "mdworld", # target frame
-                                                    "camera_frame", # source frame
-                                                    rospy.Time(0), # get the tf at first available time
-                                                    rospy.Duration(1.0)) # wait for 1 second
-        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
-            rospy.logerr("Some error with tf2_ros transformation.")
-        
-        pose_transformed = tf2_geometry_msgs.do_transform_pose(pose_goal, transform)
-#### Done
-
-        self.group.set_pose_target(pose_transformed)
-
-        ## call the planner to compute the plan and execute it.
-        plan = self.group.go(wait=True)
-        # Calling `stop()` ensures that there is no residual movement
-        self.group.stop()
-        # It is always good to clear your targets after planning with poses.
-        # Note: there is no equivalent function for clear_joint_value_targets()
-        self.group.clear_pose_targets()
 
     def plan_cartesian_path(self):
         ## plan a Cartesian path directly by specifying a list of waypoints for the end-effector to go through
