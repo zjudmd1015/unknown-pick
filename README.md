@@ -9,7 +9,10 @@ Demo video can be found [here](https://youtu.be/AsTXIjYesws). Refer to my [proje
 
 ## Pipeline Flow
 
-![pipeline](./documentation/image/workflow.png)
+![pipeline](./doc/image/workflow.png)
+
+#### Overview
+
 
 
 ## Installation
