@@ -28,7 +28,7 @@
   <arg name="is_discard_object" default="false" />
   <arg name="is_discard_obstacle" default="false" />  
 
-  <arg name="is_use_naive_pose_goal" default="false" 
+  <arg name="is_use_naive_pose_goal" default="true" 
           doc="'true' for use naive_pose_goal, 'false' for use GPD" />
 
   ## less frequently modified ones

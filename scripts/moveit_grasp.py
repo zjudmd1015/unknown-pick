@@ -26,7 +26,7 @@ class MoveitGrasp:
 
         ## initialize important parameters
         self.pregrasp_stepback = 0.2
-        self.grasp_push_dist = 0.03  # push the gripper forward to grasp objects more
+        self.grasp_push_dist = 0.02  # push the gripper forward to grasp objects more
         self.is_clear_octomap = True
         
         ## ROS init

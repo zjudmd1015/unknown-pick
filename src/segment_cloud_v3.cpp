@@ -133,6 +133,15 @@ int main(int argc, char** argv) {
   return 0;
 }
 
+void dilation(const cv::Mat& src, cv::Mat& dilation_dst) {
+  int dilation_size = 16;
+  cv::Mat element = cv::getStructuringElement( cv::MORPH_RECT,
+                                       cv::Size( 2*dilation_size + 1, 2*dilation_size+1 ),
+                                       cv::Point( dilation_size, dilation_size ) );
+  /// Apply the dilation operation
+  cv::dilate( src, dilation_dst, element );
+}
+
 
 bool CloudSegmentor::callback(unknown_pick::seg_req::Request &req, unknown_pick::seg_req::Response &res) {
   interested_object_ =  req.interested_object;
@@ -199,6 +208,63 @@ bool CloudSegmentor::callback(unknown_pick::seg_req::Request &req, unknown_pick:
       uchar cloud_interval = 20; 
       uchar cloud_interval_cnt = 0;
 
+
+      for (int m = 0; m < depth.rows; m++) {
+        for (int n = 0; n < depth.cols; n++) {
+          ushort d = depth.ptr<ushort>(m)[n];
+          if (d == 0)
+            continue;
+          uchar mask_pt = mask.ptr<uchar>(m)[n];
+          if (mask_pt != 0) {
+            // point cloud of interested object
+            PointT p;
+            // calculate world coordinates
+            p.z = double(d) / camera_factor;
+            p.x = (n - camera_cx) * p.z / camera_fx;
+            p.y = (m - camera_cy) * p.z / camera_fy;
+            // add color
+            p.b = bgr.ptr<uchar>(m)[n*3];
+            p.g = bgr.ptr<uchar>(m)[n*3+1];
+            p.r = bgr.ptr<uchar>(m)[n*3+2];
+            // add this point to cloud
+            cloud->points.push_back(p);
+          } 
+        }
+      }
+
+      // dilate the mask for obstacles
+      cv::Mat mask_dilation;
+      dilation(mask, mask_dilation);
+
+      for (int m = 0; m < depth.rows; m++) {
+        for (int n = 0; n < depth.cols; n++) {
+          ushort d = depth.ptr<ushort>(m)[n];
+          if (d == 0)
+            continue;
+          uchar mask_pt = mask_dilation.ptr<uchar>(m)[n];
+          if (mask_pt == 0) {
+            cloud_interval_cnt ++;
+            if (cloud_interval_cnt == cloud_interval) {
+              // point cloud of obstacle
+              PointT p;
+              // calculate world coordinates
+              p.z = double(d) / camera_factor;
+              p.x = (n - camera_cx) * p.z / camera_fx;
+              p.y = (m - camera_cy) * p.z / camera_fy;
+              // add gray color
+              p.b = p.g = p.r = 102;
+              // add this point to cloud
+              cloud_obstacle->points.push_back(p);
+
+              cloud_interval_cnt = 0;
+            }
+          } 
+        }
+      }
+
+
+
+/*
       for (int m = 0; m < depth.rows; m++) {
         for (int n = 0; n < depth.cols; n++) {
           ushort d = depth.ptr<ushort>(m)[n];
@@ -239,7 +305,7 @@ bool CloudSegmentor::callback(unknown_pick::seg_req::Request &req, unknown_pick:
           }
         }
       }
-
+*/
       // set attributes of point cloud
       cloud->height = 1;
       cloud->width = cloud->points.size();
